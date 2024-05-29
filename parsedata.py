@@ -14,6 +14,8 @@ out = dict()
 # sys.argv[3]: csv file containing usage stats: https://opendata.transport.nsw.gov.au/dataset/train-station-entries-and-exits-data
 # with headers: YEAR, STATION NAME, ... , ENTRIES, EXITS
 
+# sys.argv[4]: stops.txt from TfNSW
+
 with open(sys.argv[1], "r") as fp:
     soup = BeautifulSoup(fp, "html.parser")
     stations = soup.find_all("table", class_="wikitable")[0].find_all("tbody")[0].find_all("tr")
@@ -66,13 +68,26 @@ with open(sys.argv[3], "r") as fp:
         if name in out:
             out[name]["usage"] = int((entries + exits) / 2)
 
+with open(sys.argv[4], "r") as fp:
+    reader = csv.reader(fp, delimiter=",", quotechar='"')
+    next(reader, None)  # skip the headers
+    for row in reader:
+        name = row[2]
+        if " Station, Platform " in name:
+            stationName = name.split(" Station, Platform ")[0]
+            if stationName in out:
+                if "platforms" not in out[stationName]:
+                    out[stationName]["platforms"] = 0
+                out[stationName]["platforms"] += 1
+
 result = []
 for stationName in out.keys():
     obj = {
         "name": stationName,
         "lines": out[stationName]["lines"],
         "dist": out[stationName]["dist"],
-        "usage": out[stationName]["usage"]
+        "usage": out[stationName]["usage"],
+        "platforms": out[stationName]["platforms"]
     }
     result.append(obj)
 print(json.dumps(result))

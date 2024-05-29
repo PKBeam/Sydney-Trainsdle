@@ -12,26 +12,36 @@ function GuessRow({ guess, correct }) {
       </td>
       <td style={{"--bs-table-bg-type": linesColour}}>
         {guess.lines.map((line, i) =>
-            <img key={i} className="m-1" src={"/TfNSW_"+line+".svg"} width="30px"/>
+            <img key={i} className="m-1" src={"/TfNSW_"+line+".svg"} alt={line} width="30px"/>
         )}
       </td>
       <td>
-        <div className="d-flex">
+        <div className="d-flex" style={{alignItems: "center"}}>
           <div style={{width: "100%"}}>
-            {guess.dist} km
+            {guess.platforms}
           </div>
-          <div>
-            {guess.dist === correct.dist ? "✅" : guess.dist < correct.dist ? "⬆️" : "⬇️"}
+          <div style={{width: "2em"}}>
+            {guess.platforms === correct.platforms ? "✅" : guess.platforms < correct.platforms ? "▲" : "▼"}
           </div>
         </div>
       </td>
       <td>
-        <div className="d-flex">
+        <div className="d-flex" style={{alignItems: "center"}}>
           <div style={{width: "100%"}}>
-            {guess.usage} 👤
+            {guess.dist} km
           </div>
-          <div>
-            {guess.usage === correct.usage ? "✅" : guess.usage < correct.usage ? "⬆️" : "⬇️"}
+          <div style={{width: "2em"}}>
+            {guess.dist === correct.dist ? "✅" : guess.dist < correct.dist ? "▲" : "▼"}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div className="d-flex" style={{alignItems: "center"}}>
+          <div style={{width: "100%"}}>
+            {guess.usage}
+          </div>
+          <div style={{width: "2em"}}>
+            {guess.usage === correct.usage ? "✅" : guess.usage < correct.usage ? "▲" : "▼"}
           </div>
         </div>
       </td>

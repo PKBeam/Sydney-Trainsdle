@@ -85,11 +85,11 @@ function App() {
       return function() {
         a |= 0;
         a = a + 0x9e3779b9 | 0;
-        let t = a ^ a >>> 16;
+        let t = a ^ (a >>> 16);
         t = Math.imul(t, 0x21f0aaad);
-        t = t ^ t >>> 15;
+        t = t ^ (t >>> 15);
         t = Math.imul(t, 0x735a2d97);
-        return ((t = t ^ t >>> 15) >>> 0);
+        return ((t = t ^ (t >>> 15)) >>> 0);
       }
     }
     const prng = splitmix32(seed)
@@ -125,7 +125,7 @@ function App() {
         </Container>
       </Navbar>
       <header className="App-header">
-        {value.guesses.length === 0 ? <h1>{(getMode() == "infinite" ? "Infinite" : "Daily") + " Traindle"}</h1>: <div/>}
+        {value.guesses.length === 0 ? <h1>{(getMode() === "infinite" ? "Infinite" : "Daily") + " Traindle"}</h1>: <div/>}
         {value.enabled ? <Form className="mb-5" onSubmit={e => { e.preventDefault(); }}>
           <Form.Group>
             <Form.Label>Search for a train or metro station...</Form.Label>
@@ -138,10 +138,11 @@ function App() {
 
         {value.guesses.length === 0 ? <div/> : <div style={{width: "70%"}}><Table variant="dark" striped bordered style={{verticalAlign: "middle"}}>
           <thead>
-            <tr>
+            <tr style={{verticalAlign: "middle"}}>
               <th></th>
-              <th>Station Name</th>
+              <th>Name</th>
               <th>Lines</th>
+              <th>Platforms</th>
               <th>Distance from Central</th>
               <th>Daily Usage</th>
             </tr>
