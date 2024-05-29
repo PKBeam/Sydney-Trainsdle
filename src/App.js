@@ -56,6 +56,11 @@ function App() {
     })
   }
 
+  function getMode() {
+    let mode = new URLSearchParams(window.location.search).get("mode")
+    return mode
+  }
+
   function forfeit() {
     setValue({
       "seed": value.seed,
@@ -67,12 +72,12 @@ function App() {
   }
 
   function getMysteryStation(seed) {
-    let mode = new URLSearchParams(window.location.search).get("mode")
-    if (mode == "daily") {
+    let mode = getMode()
+    if (mode === "infinite") {
+      seed = Date.now()
+    } else {
       /* Unique seed per day */
       seed = Math.round(Date.now() / (1000 * 60 * 60 * 24))
-    } else {
-      seed = Date.now()
     }
 
     // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
@@ -99,7 +104,7 @@ function App() {
       <Navbar expand="lg" bg="dark" data-bs-theme="dark">
       
         <Container>
-          <Navbar.Brand href="#home">
+          <Navbar.Brand>
             <img
               src="sydneytrains.png"
               width="30"
@@ -114,12 +119,13 @@ function App() {
           <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="?mode=daily">Daily</Nav.Link>
-            <Nav.Link href="/">Infinite</Nav.Link>
+            <Nav.Link href="?mode=infinite">Infinite</Nav.Link>
           </Nav>
         </Navbar.Collapse>
         </Container>
       </Navbar>
       <header className="App-header">
+        {value.guesses.length === 0 ? <h1>{(getMode() == "infinite" ? "Infinite" : "Daily") + " Traindle"}</h1>: <div/>}
         {value.enabled ? <Form className="mb-5" onSubmit={e => { e.preventDefault(); }}>
           <Form.Group>
             <Form.Label>Search for a train or metro station...</Form.Label>
@@ -127,7 +133,7 @@ function App() {
           </Form.Group>
         </Form> : <h1 className="my-5">
           {value.forfeit ? `The station was ${value.target.name}!` :
-            `You got it in ${value.guesses.length} ` + (value.guesses.length == 1 ? "guess!" : "guesses!")}
+            `You got it in ${value.guesses.length} ` + (value.guesses.length === 1 ? "guess!" : "guesses!")}
         </h1>}
 
         {value.guesses.length === 0 ? <div/> : <div style={{width: "70%"}}><Table variant="dark" striped bordered style={{verticalAlign: "middle"}}>
