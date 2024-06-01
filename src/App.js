@@ -76,8 +76,8 @@ function App() {
     if (mode === "infinite") {
       seed = Date.now()
     } else {
-      /* Unique seed per day */
-      seed = Math.round(Date.now() / (1000 * 60 * 60 * 24))
+      /* Unique seed per day (UTC+10 = sydney time) */
+      seed = Math.floor((Date.now() / (1000 * 60 * 60 * 24)) + 10/24)
     }
 
     // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
