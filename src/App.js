@@ -106,12 +106,20 @@ function App() {
         <Container>
           <Navbar.Brand>
             <img
-              src="sydneytrains.png"
+              src="TfNSW_T.svg"
               width="30"
               height="30"
               className="d-inline-block align-top"
               style={{"marginRight": "10px"}}
               alt="Sydney Trains logo"
+            />
+	    <img
+              src="TfNSW_M.svg"
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+              style={{"marginRight": "10px"}}
+              alt="Sydney Metro logo"
             />
               Sydney Trainsdle
           </Navbar.Brand>

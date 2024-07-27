@@ -38,10 +38,10 @@ function GuessRow({ guess, correct }) {
       <td>
         <div className="d-flex" style={{alignItems: "center"}}>
           <div style={{width: "100%"}}>
-            {guess.usage}
+            {guess.usage === 0 ? "N/A" : guess.usage}
           </div>
           <div style={{width: "2em"}}>
-            {guess.usage === correct.usage ? "✅" : guess.usage < correct.usage ? "▲" : "▼"}
+            {(guess.usage === 0 || correct.usage === 0) ? "" : guess.usage === correct.usage ? "✅" : guess.usage < correct.usage ? "▲" : "▼"}
           </div>
         </div>
       </td>
