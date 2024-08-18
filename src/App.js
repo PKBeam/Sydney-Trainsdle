@@ -96,8 +96,10 @@ function App() {
     let numKeys = trainData.length
     let station = trainData[prng() % numKeys]
 
-    while (Date.now() < 1724594400000 && station.lines.indexOf("M1") === -1) {
-      station = trainData[prng() % numKeys]
+    if (mode === "daily" && Date.now() < 1724594400000) {
+      while (station.lines.indexOf("M1") === -1) {
+        station = trainData[prng() % numKeys]
+      }
     }
 
     return station
@@ -147,7 +149,7 @@ function App() {
         {value.guesses.length === 0 ? <h1>{(getMode() === "infinite" ? "Infinite" : "Daily") + " Traindle"}</h1>: <div/>}
         {value.enabled ? <Form className="mb-5" onSubmit={e => { e.preventDefault(); }}>
           <Form.Group>
-            <Form.Label>Search for a train or metro station...</Form.Label>
+            <Form.Label>{(getMode() === "daily" && Date.now() < 1724594400000) ? "Guess a metro station! (Normal services will resume on August 27)" : "Guess a train or metro station..."}</Form.Label>
             <Form.Control type="text" placeholder="e.g. Town Hall" onKeyDown={guess}/>
           </Form.Group>
         </Form> : <h1 className="my-5">
