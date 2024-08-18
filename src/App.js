@@ -57,7 +57,7 @@ function App() {
   }
 
   function getMode() {
-    let mode = new URLSearchParams(window.location.search).get("mode")
+    let mode = new URLSearchParams(window.location.search).get("mode") ?? "daily"
     return mode
   }
 
