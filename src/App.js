@@ -96,7 +96,7 @@ function App() {
     let numKeys = trainData.length
     let station = trainData[prng() % numKeys]
 
-    while (Date.now() < 1724594400000 && station.lines.indexOf("M1") == -1) {
+    while (Date.now() < 1724594400000 && station.lines.indexOf("M1") === -1) {
       station = trainData[prng() % numKeys]
     }
 
