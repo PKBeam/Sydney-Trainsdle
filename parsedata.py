@@ -14,15 +14,15 @@ out = dict()
 # sys.argv[3]: csv file containing usage stats: https://opendata.transport.nsw.gov.au/dataset/train-station-entries-and-exits-data
 # with headers: YEAR, STATION NAME, ... , ENTRIES, EXITS
 
-# sys.argv[4]: stops.txt from TfNSW
+# sys.argv[4]: stops.txt from TfNSW: https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs
 
 with open(sys.argv[1], "r") as fp:
     soup = BeautifulSoup(fp, "html.parser")
     stations = soup.find_all("table", class_="wikitable")[0].find_all("tbody")[0].find_all("tr")
-    for station in stations[1:]:
-        name = station.find_all("b")[0].find_all("a")[0].contents[0]
+    for station in stations:
+        name = station.find_all("th")[0].find_all("a")[0].contents[0]
         cells = [cell for cell in station.contents if cell != "\n"]
-        lines = [line.find_all("span")[0].contents[0] for line in cells[3].contents]
+        lines = [line.find_all("span")[0].contents[0] for line in cells[3].contents if line != "\n"]
         dist = float(re.sub("[a-zA-Z]", "", cells[5].contents[0]))
 
         out[name] = {
@@ -31,6 +31,11 @@ with open(sys.argv[1], "r") as fp:
         }
 
 metroDists = {
+    "Waterloo": 1.70,
+    "Gadigal": 1.23,
+    "Barangaroo": 3.37,
+    "Victoria Cross": 6.08,
+    "Crows Nest": 7.63,
     "Macquarie University":	22.070,
     "Macquarie Park" : 20.800,
     "North Ryde" : 19.390,
@@ -51,22 +56,28 @@ with open(sys.argv[2], "r") as fp:
         name = station.find_all("a")[0].contents[0]
         cells = [cell for cell in station.contents if cell != "\n"]
         lines = [line.find_all("span")[0].contents[0] for line in cells[2].contents[0]]
-
         if name not in out:
-            out[name] = { "lines": [], "dist": metroDists[name] }
-        out[name]["lines"] += lines
+            out[name] = { "lines": lines, "dist": metroDists[name] }
 
 with open(sys.argv[3], "r") as fp:
     reader = csv.reader(fp, delimiter=",", quotechar='"')
     next(reader, None)  # skip the headers
+    count = 0
     for row in reader:
-        name = row[1][:-8]
+        name = row[1][:-9]
+        if row[-1] == "Less than 50":
+            count += 50
+        else:
+            count += int(row[-1])
         if name + " Airport" in out:
             name += " Airport"
-        entries = int(row[-2])
-        exits = int(row[-1])
         if name in out:
-            out[name]["usage"] = int((entries + exits) / 2)
+            out[name]["usage"] = int(count / (2 * 31))
+
+        if row[3] == "Exits":
+            pass
+        elif row[3] == "Entries":
+            count = 0
 
 with open(sys.argv[4], "r") as fp:
     reader = csv.reader(fp, delimiter=",", quotechar='"')
@@ -82,6 +93,15 @@ with open(sys.argv[4], "r") as fp:
 
 result = []
 for stationName in out.keys():
+    if stationName == "Helensburgh":
+        continue
+    if stationName in ["Lidcombe", "Berala", "Regents Park", "Birrong", "Yagoona", "Bankstown"]:
+        out[stationName]["lines"].append("T6")
+    if stationName in ["Macdonaldtown", "Newtown", "Stanmore", "Petersham", "Lewisham", "Summer Hill", "Ashfield", "Croydon", "Burwood", "Strathfield", "Homebush"]:
+        out[stationName]["lines"].append("T3")
+    if stationName in ["Strathfield", "Redfern", "Central"] and "T7" in out[stationName]["lines"]:
+        out[stationName]["lines"].remove("T7")
+    out[stationName]["lines"].sort()
     obj = {
         "name": stationName,
         "lines": out[stationName]["lines"],
