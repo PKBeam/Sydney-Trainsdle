@@ -72,7 +72,11 @@ with open(sys.argv[3], "r") as fp:
         if name + " Airport" in out:
             name += " Airport"
         if name in out:
-            out[name]["usage"] = int(count / (2 * 31))
+            # for august data only, since new stations opened on 19th
+            if name in ["Waterloo", "Gadigal", "Barangaroo", "Victoria Cross", "Crows Nest"]:
+                out[name]["usage"] = int(count / (2 * 12))
+            else:
+                out[name]["usage"] = int(count / (2 * 31))
 
         if row[3] == "Exits":
             pass
@@ -93,14 +97,19 @@ with open(sys.argv[4], "r") as fp:
 
 result = []
 for stationName in out.keys():
+    # ignore helensburgh
     if stationName == "Helensburgh":
         continue
+    # add new T6 line
     if stationName in ["Lidcombe", "Berala", "Regents Park", "Birrong", "Yagoona", "Bankstown"]:
         out[stationName]["lines"].append("T6")
+    # add new T3 line
     if stationName in ["Macdonaldtown", "Newtown", "Stanmore", "Petersham", "Lewisham", "Summer Hill", "Ashfield", "Croydon", "Burwood", "Strathfield", "Homebush"]:
         out[stationName]["lines"].append("T3")
-    if stationName in ["Strathfield", "Redfern", "Central"] and "T7" in out[stationName]["lines"]:
+    # remove T7 stations
+    if stationName in ["Strathfield", "Central"] and "T7" in out[stationName]["lines"]:
         out[stationName]["lines"].remove("T7")
+
     out[stationName]["lines"].sort()
     obj = {
         "name": stationName,
